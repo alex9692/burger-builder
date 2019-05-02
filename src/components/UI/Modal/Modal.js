@@ -6,11 +6,10 @@ import Backdrop from "../Backdrop/Backdrop";
 
 class Modal extends Component {
 	shouldComponentUpdate(nextProps, nextState) {
-		return this.props.show !== nextProps.show;
-	}
-
-	componentWillUpdate() {
-		console.log("[Modal] WillUpdate");
+		return (
+			this.props.show !== nextProps.show ||
+			this.props.children !== nextProps.children
+		);
 	}
 
 	render() {
