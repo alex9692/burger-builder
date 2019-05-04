@@ -16,7 +16,7 @@ exports.postOrder = function(req, res, next) {
 	order
 		.save()
 		.then(result => {
-			res.status(200).json({ message: "successfully updated" });
+			res.status(200).json(result);
 		})
 		.catch(err => {
 			res.status(422).send({ errors: err });
@@ -25,7 +25,7 @@ exports.postOrder = function(req, res, next) {
 
 exports.getOrders = function(req, res, next) {
 	Order.find({})
-		.select("-_id -__v")
+		.select("-__v")
 		.exec()
 		.then(result => {
 			return res.status(200).json(result);

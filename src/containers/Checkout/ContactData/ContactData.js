@@ -1,10 +1,13 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import axios from "../../../axios-service";
 
 import Button from "../../../components/UI/Button/Button";
 import classes from "./ContactData.css";
 import Spinner from "../../../components/UI/Spinner/Spinner";
 import Input from "../../../components/UI/Input/Input";
+import withErrorHandler from "../../../hoc/withErrorHandler/withErrorHandler";
+import * as actions from "../../../store/actions";
 
 class ContactData extends Component {
 	state = {
@@ -88,8 +91,7 @@ class ContactData extends Component {
 				valid: true
 			}
 		},
-		formIsValid: false,
-		loading: false
+		formIsValid: false
 	};
 
 	changeHandler = (event, inputIdentifier) => {
@@ -133,7 +135,7 @@ class ContactData extends Component {
 
 	orderHandler = event => {
 		event.preventDefault();
-		this.setState({ loading: true });
+
 		const formData = {};
 		for (let formDataIdentifier in this.state.orderForm) {
 			formData[formDataIdentifier] = this.state.orderForm[
@@ -145,19 +147,7 @@ class ContactData extends Component {
 			price: this.props.totalPrice,
 			orderData: formData
 		};
-		console.log(order);
-		axios
-			.post("/orders", order)
-			.then(response => {
-				console.log(response);
-				this.setState({ loading: false });
-				this.props.history.push("/");
-			})
-			.catch(err => {
-				console.log(err);
-				this.setState({ loading: false });
-				this.props.history.push("/");
-			});
+		this.props.orderStart(order, this.props.history);
 	};
 
 	render() {
@@ -189,7 +179,7 @@ class ContactData extends Component {
 				</Button>
 			</form>
 		);
-		if (this.state.loading) {
+		if (this.props.loading) {
 			form = <Spinner />;
 		}
 
@@ -202,4 +192,22 @@ class ContactData extends Component {
 	}
 }
 
-export default ContactData;
+const mapStateToProps = state => {
+	return {
+		ingredients: state.burger.ingredients,
+		totalPrice: state.burger.totalPrice,
+		loading: state.order.loading
+	};
+};
+
+const mapDispatchToProps = dispatch => {
+	return {
+		orderStart: (orderData, history) =>
+			dispatch(actions.burgerOrderStart(orderData, history))
+	};
+};
+
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(withErrorHandler(ContactData, axios));
