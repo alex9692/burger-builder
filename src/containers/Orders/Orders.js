@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { Redirect } from "react-router-dom";
 
 import Order from "../../components/Order/Order";
 import axios from "../../axios-service";
@@ -8,18 +9,17 @@ import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 import * as actions from "../../store/actions";
 
 class Orders extends Component {
-	state = {
-		orders: [],
-		loading: true
-	};
 	componentDidMount() {
 		this.props.fetchOrder();
 	}
 	render() {
 		let orders = <Spinner />;
+		let redirect = null;
+		if (!this.props.isAuth) {
+			redirect = <Redirect to="/" />;
+		}
 		if (!this.props.loading) {
 			orders = this.props.orders.map(order => {
-				console.log(order);
 				return (
 					<Order
 						key={order._id}
@@ -30,14 +30,20 @@ class Orders extends Component {
 			});
 		}
 
-		return <div>{orders}</div>;
+		return (
+			<div>
+				{redirect}
+				{orders}
+			</div>
+		);
 	}
 }
 
 const mapStateToProps = state => {
 	return {
 		orders: state.order.orders,
-		loading: state.order.loading
+		loading: state.order.loading,
+		isAuth: state.auth.isAuth
 	};
 };
 

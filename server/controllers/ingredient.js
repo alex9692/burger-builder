@@ -7,7 +7,7 @@ exports.getIngredients = function(req, res) {
 		.then(response => {
 			return res.json(response);
 		})
-		.catch(err => {
-			return res.json(err);
+		.catch(error => {
+			return res.status(404).send({ error: "Ingredients can't be loaded" });
 		});
 };

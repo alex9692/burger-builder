@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const FakeDB = require("./fakeDB");
 const igList = require("./routes/ingredient");
 const ordersList = require("./routes/orders");
+const auth = require("./routes/auth");
 
 // const fakeDB = new FakeDB();
 // fakeDB.seeDb();
@@ -24,6 +25,7 @@ app.use(cors());
 
 app.use("/my-burger/ingredientList", igList);
 app.use("/my-burger/orders", ordersList);
+app.use("/my-burger/auth", auth);
 
 mongoose
 	.connect("mongodb://localhost:27017/my-burger", { useNewUrlParser: true })

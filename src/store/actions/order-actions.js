@@ -1,5 +1,7 @@
 import * as actionTypes from "./actionTypes";
 import axios from "../../axios-service";
+import { read_cookie } from "sfcookies";
+import jwt from "jsonwebtoken";
 
 const burgerOrderInit = () => {
 	return {
@@ -36,7 +38,7 @@ export const burgerOrderStart = (orderData, history) => dispatch => {
 		.catch(err => {
 			console.log(err);
 			dispatch(burgerOrderFail(err));
-			history.push("/");
+			// history.push("/");
 		});
 };
 
@@ -61,16 +63,19 @@ const fetchOrdersFail = error => {
 };
 
 export const fetchOrders = () => dispatch => {
+	const token = read_cookie(actionTypes.COOKIE_KEY);
+	const userId = jwt.decode(token).userId;
 	dispatch(fetchOrdersInit());
 	return axios
-		.get("/orders")
+		.get(`/orders/${userId}`)
 		.then(response => {
 			const orders = response.data;
 			console.log(orders);
 			dispatch(fetchOrdersSuccess(orders));
 		})
-		.catch(err => {
-			dispatch(fetchOrdersFail(err));
+		.catch(error => {
+			console.log(error.data);
+			dispatch(fetchOrdersFail(error));
 		});
 };
 

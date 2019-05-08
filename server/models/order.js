@@ -17,7 +17,11 @@ const orderSchema = new Schema({
 			type: String,
 			default: "Fastest"
 		}
+	},
+	user: {
+		type: Schema.Types.ObjectId,
+		ref: "User"
 	}
 });
 
-module.exports = mongoose.model("Orders", orderSchema);
+module.exports = mongoose.model("Order", orderSchema);

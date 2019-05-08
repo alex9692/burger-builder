@@ -19,8 +19,9 @@ const withErrorHandler = (WrappedComponent, axios) => {
 					return res;
 				},
 				error => {
-					console.log(error);
-					this.setState({ error: error });
+					console.log(error.response);
+					this.setState({ error: error.response.data.error });
+					return Promise.reject(error.response);
 				}
 			);
 		}
@@ -38,7 +39,7 @@ const withErrorHandler = (WrappedComponent, axios) => {
 			return (
 				<Auxillary>
 					<Modal show={this.state.error} close={this.errorConfirmedHandler}>
-						{this.state.error ? this.state.error.message : null}
+						{this.state.error ? this.state.error : null}
 					</Modal>
 					<WrappedComponent {...this.props} />
 				</Auxillary>

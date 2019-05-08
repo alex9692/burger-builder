@@ -13,3 +13,19 @@ export const FETCH_ORDERS_SUCCESS = "FETCH_ORDERS_SUCCESS";
 export const FETCH_ORDERS_FAIL = "FETCH_ORDERS_FAIL";
 
 export const PURCHASE_END = "PURCHASE_END";
+
+export const REGISTER_START = "REGISTER_START";
+export const REGISTER_SUCCESS = "REGISTER_SUCCESS";
+export const REGISTER_FAIL = "REGISTER_FAIL";
+
+export const REGISTER_OVER = "REGISTER_OVER";
+
+export const SIGN_IN_START = "SIGN_IN_START";
+export const SIGN_IN_SUCCESS = "SIGN_IN_SUCCESS";
+export const SIGN_IN_FAIL = "SIGN_IN_FAIL";
+
+export const SIGN_IN_OVER = "SIGN_IN_OVER";
+
+export const SIGN_OUT = "SIGN_OUT";
+
+export const COOKIE_KEY = "TOKEN";
