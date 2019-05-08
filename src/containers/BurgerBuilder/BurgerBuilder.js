@@ -11,13 +11,6 @@ import Spinner from "../../components/UI/Spinner/Spinner";
 import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 import * as actions from "../../store/actions";
 
-const INGREDIENT_PRICES = {
-	meat: 1.3,
-	salad: 0.5,
-	cheese: 0.4,
-	bacon: 0.7
-};
-
 class BurgerBuilder extends Component {
 	state = {
 		purchasing: false
@@ -43,40 +36,12 @@ class BurgerBuilder extends Component {
 		return sum > 0;
 	};
 
-	addIngredient = type => {
-		const oldCount = this.props.ingredients[type];
-		const updatedCount = oldCount + 1;
-		const updatedIngredient = {
-			...this.state.ingredients
-		};
-		updatedIngredient[type] = updatedCount;
-		const priceAdd = INGREDIENT_PRICES[type];
-		const oldPrice = this.props.totalPrice;
-		const newPrice = oldPrice + priceAdd;
-
-		this.setState({ ingredients: updatedIngredient, totalPrice: newPrice });
-		this.updatePurchaseState(updatedIngredient);
-	};
-
-	deleteIngredient = type => {
-		const oldCount = this.props.ingredients[type];
-		if (oldCount > 0) {
-			const updatedCount = oldCount - 1;
-			const updatedIngredient = {
-				...this.state.ingredients
-			};
-			updatedIngredient[type] = updatedCount;
-			const priceDeduct = INGREDIENT_PRICES[type];
-			const oldPrice = this.props.totalPrice;
-			const newPrice = oldPrice - priceDeduct;
-
-			this.setState({ ingredients: updatedIngredient, totalPrice: newPrice });
-			this.updatePurchaseState(updatedIngredient);
-		}
-	};
-
 	purchaseHandler = () => {
-		this.setState({ purchasing: true });
+		if (this.props.isAuth) {
+			this.setState({ purchasing: true });
+		} else {
+			this.props.history.push("/auth");
+		}
 	};
 
 	purchaseCancelHandler = () => {
@@ -84,7 +49,7 @@ class BurgerBuilder extends Component {
 	};
 
 	purchaseContinueHandler = () => {
-		this.props.onPurchase();
+		// this.props.onPurchaseEnd();
 		this.props.history.push({ pathname: "/checkout" });
 	};
 
@@ -109,6 +74,7 @@ class BurgerBuilder extends Component {
 				<Auxillary>
 					<Burger ingredients={this.props.ingredients} />
 					<BuildControls
+						isAuth={this.props.isAuth}
 						ingredientAdded={this.props.addIngredient}
 						ingredientRemoved={this.props.removeIngredient}
 						disabled={disabledInfo}
@@ -143,7 +109,8 @@ const mapStateToProps = state => {
 	return {
 		ingredients: state.burger.ingredients,
 		totalPrice: state.burger.totalPrice,
-		error: state.burger.error
+		error: state.burger.error,
+		isAuth: state.auth.isAuth
 	};
 };
 
@@ -151,8 +118,8 @@ const mapDispatchToProps = dispatch => {
 	return {
 		getIngredients: () => dispatch(actions.getIngredients()),
 		addIngredient: ingType => dispatch(actions.addIngredient(ingType)),
-		removeIngredient: ingType => dispatch(actions.removeIngredient(ingType)),
-		onPurchase: () => dispatch(actions.purchaseEnd())
+		removeIngredient: ingType => dispatch(actions.removeIngredient(ingType))
+		// onPurchaseEnd: () => dispatch(actions.purchaseEnd())
 	};
 };
 

@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import axios from "../../../axios-service";
+import { read_cookie } from "sfcookies";
+import jwt from "jsonwebtoken";
 
 import Button from "../../../components/UI/Button/Button";
 import classes from "./ContactData.css";
@@ -8,6 +10,7 @@ import Spinner from "../../../components/UI/Spinner/Spinner";
 import Input from "../../../components/UI/Input/Input";
 import withErrorHandler from "../../../hoc/withErrorHandler/withErrorHandler";
 import * as actions from "../../../store/actions";
+import { COOKIE_KEY } from "../../../store/actions/actionTypes";
 
 class ContactData extends Component {
 	state = {
@@ -48,7 +51,8 @@ class ContactData extends Component {
 				validation: {
 					required: true,
 					minLength: 5,
-					maxLength: 5
+					maxLength: 5,
+					isNumeric: true
 				},
 				valid: false,
 				touched: false
@@ -74,7 +78,8 @@ class ContactData extends Component {
 				},
 				value: "",
 				validation: {
-					required: true
+					required: true,
+					isEmail: true
 				},
 				valid: false,
 				touched: false
@@ -129,6 +134,14 @@ class ContactData extends Component {
 		if (rules && rules.maxLength) {
 			isValid = value.length <= rules.maxLength && isValid;
 		}
+		if (rules && rules.isEmail) {
+			const pattern = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+			isValid = pattern.test(value) && isValid;
+		}
+		if (rules && rules.isNumeric) {
+			const pattern = /^\d+$/;
+			isValid = pattern.test(value) && isValid;
+		}
 
 		return isValid;
 	};
@@ -142,13 +155,23 @@ class ContactData extends Component {
 				formDataIdentifier
 			].value;
 		}
+
+		const token = read_cookie(COOKIE_KEY);
+		const userId = jwt.decode(token).userId;
+
 		const order = {
+			userId,
 			ingredients: this.props.ingredients,
 			price: this.props.totalPrice,
 			orderData: formData
 		};
 		this.props.orderStart(order, this.props.history);
 	};
+
+	componentDidMount() {
+		const token = read_cookie(COOKIE_KEY);
+		const userId = jwt.decode(token).userId;
+	}
 
 	render() {
 		const formElements = Object.keys(this.state.orderForm).map(key => {

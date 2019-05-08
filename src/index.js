@@ -10,10 +10,15 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import burgerReducer from "./store/reducer/burger-reducer";
 import orderReducer from "./store/reducer/order-reducer";
+import authReducer from "./store/reducer/auth-reducer";
+import registerReducer from "./store/reducer/register-reducer";
+import * as actions from "./store/actions";
 
 const rootReducer = combineReducers({
 	burger: burgerReducer,
-	order: orderReducer
+	order: orderReducer,
+	auth: authReducer,
+	register: registerReducer
 });
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -22,6 +27,9 @@ const store = createStore(
 	rootReducer,
 	composeEnhancers(applyMiddleware(thunk))
 );
+
+store.dispatch(actions.checkAuthOnStartUp());
+
 const app = (
 	<BrowserRouter>
 		<App />
